@@ -15,11 +15,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 #[Route('/request')]
 final class RequestController extends AbstractController
 {
+    private MailerInterface $mailer;
+    public function __construct(MailerInterface $mailer)
+    {
+        $this->mailer = $mailer;
+    }
     #[Route(name: 'app_request_index', methods: ['GET'])]
     public function index(RequestRepository $requestRepository): Response
     {
@@ -100,10 +106,16 @@ final class RequestController extends AbstractController
             throw $this->createAccessDeniedException('You must be logged in to make an offer.');
         }
 
-        // Fetch the article object using the ID
+
         $article = $articleRepository->find($id);
         if (!$article) {
             throw $this->createNotFoundException('The requested article does not exist.');
+        }
+
+        $articleOwner = $article->getUser(); // Assuming Article entity has a 'getUser()' method
+        if (!$articleOwner || !$articleOwner->getEmail()) {
+            $this->addFlash('error', 'The article owner does not have a valid email address.');
+            return $this->redirectToRoute('app_request_index');
         }
 
         // Find the articles belonging to the logged-in user
@@ -111,7 +123,7 @@ final class RequestController extends AbstractController
 
         if (!$userArticles) {
             $this->addFlash('warning', 'You have no articles to offer.');
-            return $this->redirectToRoute('app_request_index');
+            return $this->redirectToRoute('app_article_new');
         }
 
         // Create a new offer request
@@ -149,12 +161,31 @@ final class RequestController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Offer made successfully.');
+            try {
+                $email = (new Email())
+                    ->from('jaouher3009@gmail.com')
+                    ->to($articleOwner->getEmail()) // Send to article owner's email
+                    ->subject('New Offer for Your Article')
+                    ->text(sprintf(
+                        "Hello %s,\n\nUser %s has made an offer for your article: %s.\n\nMessage:\n%s",
+                        $articleOwner->getFirstname(),
+                        $user->getfirstname(),
+                        $article->getTitre(),
+                        $form->get('message')->getData()
+                    ));
+
+                $this->mailer->send($email);
+                $this->addFlash('success', 'Email sent successfully.');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Failed to send email: ' . $e->getMessage());
+            }
             return $this->redirectToRoute('app_request_index');
         }
 
         return $this->render('request/new.html.twig', [
             'form' => $form->createView(),
         ]);
+
     }
 
     #[Route('/{id}', name: 'app_request_show', methods: ['GET'])]
@@ -224,27 +255,55 @@ final class RequestController extends AbstractController
         return $this->redirectToRoute('app_request_index', [], Response::HTTP_SEE_OTHER);
     }
     #[Route('/{id}/accept', name: 'app_request_accept', methods: ['POST'])]
-    public function acceptRequest(OfferRequest $offerRequest, EntityManagerInterface $entityManager, Request $request): Response
-    {
+    public function acceptRequest(
+        OfferRequest $offerRequest,
+        EntityManagerInterface $entityManager,
+        Request $request
+    ): Response {
+        // Update the status of the accepted offer request
         $offerRequest->setStatus('accepted');
 
+        // Update the article status
         $article = $offerRequest->getArticleid();
         $article->setStatus('swapped');
+
+        // Retrieve all other requests for this article
         $offerRequests = $entityManager->getRepository(OfferRequest::class)
             ->findBy(['Articleid' => $article]);
 
-        foreach ($offerRequests as $request) {
-            if ($request->getId() !== $offerRequest->getId() && $request->getStatus() !== 'accepted') {
-                $request->setStatus('auto-refused');
+        // Auto-refuse other requests
+        foreach ($offerRequests as $req) {
+            if ($req->getId() !== $offerRequest->getId() && $req->getStatus() !== 'accepted') {
+                $req->setStatus('auto-refused');
             }
         }
 
         $entityManager->flush();
 
+        // Notify the user who made the accepted offer
+        try {
+            $articleOwner = $article->getUser(); // Assuming `getUser()` fetches the owner
+            $offerMaker = $offerRequest->getUserid(); // Assuming `getUserid()` fetches the offer maker
+
+            $email = (new Email())
+                ->from('jaouher3009@gmail.com')
+                ->to($offerMaker->getEmail()) // Send email to the offer maker
+                ->subject('Your Offer Has Been Accepted')
+                ->text(sprintf(
+                    "Hello %s,\n\nYour offer for the article '%s' has been accepted by the owner, %s.\nYou can contact them at their phone number: %s.\n\nThank you!",
+                    $offerMaker->getFirstname(),
+                    $article->getTitre(),
+                    $articleOwner->getFirstname(),
+                    $articleOwner->getPhonenum()
+                ));
+
+            $this->mailer->send($email);
+            $this->addFlash('success', 'Email notification sent to the offer maker.');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Failed to send email notification: ' . $e->getMessage());
+        }
+
         $this->addFlash('success', 'Request accepted.');
-
-        // Get the referer (previous page URL)
-
 
         return $this->redirectToRoute('app_request_index');
     }

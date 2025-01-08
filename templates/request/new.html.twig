@@ -3,9 +3,31 @@
 {% block title %}New Request{% endblock %}
 
 {% block body %}
-    <h1>Create new Request</h1>
+    <style>
+        .medmeh-container{
+            margin-top: 43px;
+            padding-top: 11px;
+            background: #ffffff;
+            border-radius: 10px;
+            font-size: 0.8em;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 6px 29px 0 rgba(0, 0, 0, 0.2),  20px 19px 101px 0 rgba(0, 0, 0, 0.19);
+        }
+        .h1mehmeh{
+            font-family: 'Times New Roman', Times, serif;
+            padding: 20px 20px 20px 50px;
+            font-weight: bold;
+        }
+    </style>
+    <div class="medmeh-container">
+        <h1 class="h1mehmeh">Create new Request</h1>
+    </div>
+    <div class="medmeh-container">
 
-    {{ include('request/_form.html.twig') }}
+        {{ include('request/_form.html.twig') }}
 
-    <a href="javascript:void(0);" onclick="window.history.back();" class="btn btn-secondary">Go Back</a>
+    </div>
+
     {% endblock %}

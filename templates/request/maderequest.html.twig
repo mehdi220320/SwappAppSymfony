@@ -1,37 +1,93 @@
 {% extends 'base.html.twig' %}
 {% block stylesheets %}
-<style>
+    <style>
+        /* Sidebar Styling */
+        .sidebar {
+            width: 80px; /* Collapsed width */
+            height: calc(100vh - 56px); /* Full height minus navbar height */
+            position: fixed;
+            top: 56px;
+            left: 0;
+            background-color: #343a40; /* Dark background */
+            color: white; /* Text color */
+            transition: width 0.3s ease;
+            overflow-x: hidden;
+            z-index: 1030;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+        }
 
-    .sidebar {
-        width: 80px; /* Adjust for the collapsed state */
-        height: calc(100vh - 56px); /* Full height minus navbar height */
-        position: fixed; /* Fix the sidebar to the left */
-        top: 56px; /* Offset to account for the navbar */
-        left: 0;
-        background-color: #343a40; /* Sidebar background */
-        transition: width 0.3s;
-        overflow-x: hidden;
-        z-index: 1030; /* Ensure it stays on top */
-    }
+        .sidebar a {
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+            padding: 10px 5px;
+            width: 100%;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
 
-    /* When hovered, expand the sidebar */
-    .sidebar:hover {
-        width: 200px; /* Adjust width as needed */
-    }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
 
-    /* Content wrapper to align next to the sidebar */
-    .content-wrapper {
-        margin-left: 80px; /* Match the width of the collapsed sidebar */
-        flex-grow: 1;
-        padding: 20px;
-        transition: margin-left 0.3s;
-    }
+        .sidebar:hover {
+            width: 200px;
+        }
 
-    .sidebar:hover + .content-wrapper {
-        margin-left: 200px; /* Match the expanded sidebar width */
-    }
+        .sidebar:hover a {
+            text-align: left;
+            padding-left: 20px;
+        }
 
-</style>{% endblock %}
+        .content-wrapper {
+            margin-left: 80px; /* Match collapsed sidebar */
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+            background-color: #f8f9fa; /* Light background for content */
+            min-height: 100vh;
+        }
+
+        .sidebar:hover + .content-wrapper {
+            margin-left: 200px; /* Match expanded sidebar */
+        }
+
+        /* Table Styling */
+        table.table {
+            background-color: white; /* White table background */
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table.table thead {
+            background-color: #007bff; /* Blue header */
+            color: white;
+        }
+
+        table.table th,
+        table.table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        table.table tbody tr:hover {
+            background-color: #f1f1f1; /* Light hover effect */
+        }
+
+        .btn-sm {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.4rem;
+        }
+
+        .text-muted {
+            font-style: italic;
+            color: #6c757d;
+        }
+    </style>
+{% endblock %}
 {% block body %}
     <div class="d-flex">
         {% include 'sidebar.html.twig' %}

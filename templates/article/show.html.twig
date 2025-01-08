@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/articleshow.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/articlecardscss.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/foundation/6.5.3/css/foundation.min.css">
 {% endblock %}
 {% block body %}
@@ -195,6 +196,10 @@
         }
 
     </style>
+    <div class="d-flex">
+        {#        {% if is_granted('ROLE_ADMIN') %}#}
+        {% include 'sidebar.html.twig' %}
+        {#        {% endif %}#}
 <main class="main">
     <div class="mainWrapper">
         <div class="mainBackground clearfix">
@@ -295,10 +300,8 @@
                         </div>
                     </div>
             </div>
-        </div>
+        </main>
     </div>
-
-</main>
 
 <script>
     window.onload = function () {

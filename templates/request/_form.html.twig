@@ -1,4 +1,89 @@
+{% block stylesheets %}
+    <style>
+        /* General Form Styling */
+        form {
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px; /* Center the form with a fixed width */
+            margin: 20px auto; /* Centering */
+        }
+
+        form .form-group {
+            margin-bottom: 15px;
+        }
+
+        /* Labels */
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        /* Input and Textarea Fields */
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ced4da; /* Light gray border */
+            border-radius: 4px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: #80bdff; /* Blue border on focus */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Submit Button */
+        button.btn {
+            background-color: #007bff; /* Bootstrap primary color */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button.btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* "Go Back" Link */
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 10px;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        /* Headings */
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #343a40; /* Dark gray */
+        }
+    </style>
+{% endblock %}
+
 {{ form_start(form) }}
     {{ form_widget(form) }}
     <button class="btn">{{ button_label|default('Save') }}</button>
+    <a href="javascript:void(0);" onclick="window.history.back();" class="btn btn-secondary" style="    height: 44px;
+    margin: auto;">Go Back</a>
+
 {{ form_end(form) }}
