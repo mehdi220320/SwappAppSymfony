@@ -1,0 +1,45 @@
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email  # Use "username" if it's the identifier
+
+    firewalls:
+        main:
+            pattern: ^/
+            logout:
+                path: app_logout
+                invalidate_session: true
+                target: /login
+            custom_authenticator: App\Security\UserAuthenticator
+
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
+                always_remember_me: true
+
+            # Remove the "anonymous" option, as it's implicit
+
+    access_control:
+        # Allow anonymous users to access login and register routes
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/article, roles: ROLE_USER }
+        - { path: ^/user/profile, roles: ROLE_USER }
+        - { path: ^/request, roles: ROLE_USER }
+        # Restrict admin routes to ROLE_ADMIN
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/request, roles: ROLE_ADMIN }
+        - { path: ^/cat, roles: ROLE_ADMIN }
+        - { path: ^/user, roles: ROLE_ADMIN }
+
+        # Restrict profile routes to ROLE_USER
+        - { path: ^/profile, roles: ROLE_USER }
+
+        # Default rule: allow all other paths to anonymous users
+        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }

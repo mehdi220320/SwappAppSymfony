@@ -1,0 +1,17 @@
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+</head>
+<body>
+<h1>Dashboard</h1>
+<div>
+    {{ render_chart(chart, {'class': 'ux-chart-line'}) }}
+</div>
+{% block stylesheets %}{{ encore_entry_link_tags('app') }}{% endblock %}
+{% block javascripts %}{{ encore_entry_script_tags('app') }}{% endblock %}
+<script src="{{ asset('build/runtime.js') }}"></script>
+<script src="{{ asset('build/app.js') }}"></script>
+<script src="{{ asset('build/vendors.js') }}"></script>
+</body>
+</html>

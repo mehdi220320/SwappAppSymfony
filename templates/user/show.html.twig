@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <style>
+
+        .sidebar {
+            width: 80px; /* Adjust for the collapsed state */
+            height: calc(100vh - 56px); /* Full height minus navbar height */
+            position: fixed; /* Fix the sidebar to the left */
+            top: 56px; /* Offset to account for the navbar */
+            left: 0;
+            background-color: #343a40; /* Sidebar background */
+            transition: width 0.3s;
+            overflow-x: hidden;
+            z-index: 1030; /* Ensure it stays on top */
+        }
+
+        /* When hovered, expand the sidebar */
+        .sidebar:hover {
+            width: 200px; /* Adjust width as needed */
+        }
+
+        /* Content wrapper to align next to the sidebar */
+        .content-wrapper {
+            margin-left: 80px; /* Match the width of the collapsed sidebar */
+            flex-grow: 1;
+            padding: 20px;
+            transition: margin-left 0.3s;
+        }
+
+        .sidebar:hover + .content-wrapper {
+            margin-left: 200px; /* Match the expanded sidebar width */
+        }
+
+    </style>{% endblock %}
+
+{% block body %}
+    <div class="d-flex">{% include 'sidebar.html.twig' %}
+        <div class="flex-grow-1 p-4">
+            {% block content %}
+                <style>
+                    body{
+                        margin-top: 1%;
+
+                        background-image: url('{{ asset('images/Design sans titre(5).png') }}');
+                        background-size: cover;
+                        background-attachment: fixed;
+                        background-position: center;
+                    }
+
+                    .profile-photo {
+                        max-width: 150px;
+                        height: auto;
+                    }
+
+                    .profile-info {
+                        margin-top: 20px;
+                    }
+
+                    .profile-info h3 {
+                        font-size: 1.5rem;
+                    }
+
+                    .profile-info p {
+                        font-size: 1rem;
+                        color: #555;
+                    }
+
+                </style>
+                <div class="container mt-4">
+                    <div class="row">
+                        <!-- Left column (Profile photo and information) -->
+                        <div class="col-md-4">
+                            <!-- Profile photo -->
+                            <div class="text-center">
+                                {% if user.pdp %}
+                                    <img src="data:image/jpeg;base64,{{ user.getEncodedPdp() }}" alt="Profile Photo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                                {% else %}
+                                    <p>No profile photo available</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Profile information -->
+                            <div class="mt-3">
+                                <h4>{{ user.firstname }} {{ user.lastname }}</h4>
+                                <p><strong>Phone Number:</strong> {{ user.phonenum }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Right column (User form and other content) -->
+                        <div class="col-md-8">
+                            <h1>{{ user.firstname }}'s Profile</h1>
+
+                            <h3>Other Profile Information:</h3>
+
+                            <div class="mb-3">
+                                <strong>First Name:</strong> {{ user.firstname }}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Last Name:</strong> {{ user.lastname }}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Phone Number:</strong> {{ user.phonenum }}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Email:</strong> {{ user.email }}
+                            </div>
+
+                            <hr>
+
+                            <!-- Include other content (like articles) -->
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            {% endblock %}
+
+        </div>
+    </div>             {% endblock %}
